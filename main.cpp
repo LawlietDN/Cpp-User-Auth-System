@@ -18,7 +18,7 @@ int main()
         case 1: return 1;
                 
         case 2:
-        unqiueIdGenerator();
+        uniqueIDGenerator();
         getName(userFullName, isAllowed);
         getUserName(userName, isAllowed);
         getUserEmail(userEmail, isAllowed);
@@ -31,7 +31,7 @@ int main()
     return 0;
 }
 
-int uniqueIdGenerator()
+int uniqueIDGenerator()
 {
     std::string key = "ID";
     int ID = 0;

@@ -11,4 +11,4 @@ template<typename T>
 bool isAvailable(T& searchTerm, std::string const& dataType);
 template<typename T>
 int storeData(std::string const& key, T const& value);
-int unqiueIdGenerator();
+int uniqueIDGenerator();

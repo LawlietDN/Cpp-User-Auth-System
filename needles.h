@@ -7,6 +7,8 @@ int displayOptions();
 void greetUser();
 int getUserEmail(std::string& email, bool& isAllowed);
 bool isValidEmail(std::string const& email);
-bool isAvailable();
+template<typename T>
+bool isAvailable(T& searchTerm, std::string const& dataType);
 template<typename T>
 int storeData(std::string const& key, T const& value);
+int unqiueIdGenerator();

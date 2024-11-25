@@ -19,14 +19,32 @@ int main()
         case 1: return 1;
                 
         case 2:
+        unqiueIdGenerator();
         getName(userFullName, isAllowed);
         getUserName(userName, isAllowed);
         getUserEmail(userEmail, isAllowed);
+        
     }
     
     
     
     return 0;
+}
+
+int unqiueIdGenerator()
+{
+    std::string key = "ID";
+    int ID = 0;
+    if(!isAvailable(ID, key))
+    {
+       ID++;
+       storeData(key, ID);
+       return 0;
+    }
+       storeData(key, ID);
+       return 0;
+    
+
 }
 
 bool lengthChecker(std::string const& userInput) 
@@ -146,14 +164,32 @@ bool isValidEmail(std::string const& email)
      std::cout << "Invalid Email foramat.\n";
      return false;
 }
-
-/*bool isAvailable(auto searchterm)
+template<typename T>
+bool isAvailable(T& searchTerm, std::string const& dataType)
 {
-    std::string chunk;
-    std::ofstream file("userData.json", std::ios::app);
+    nlohmann::json jsonFile;    
+    std::ifstream file("userData.json");
+    file >> jsonFile;
+    if(dataType == "ID")
+    {
+        int lastID = 0;
+
+        for(auto const& element: jsonFile)
+        {
+            if(element.contains("ID"))
+            {
+                int currentID = element["ID"];
+                lastID = currentID;
+            }
+        }
+        if(lastID == searchTerm)
+        {
+            return false;
+        }
+    }
 
 
-}*/
+}
 
 
 template<typename T>
@@ -181,7 +217,7 @@ int storeData(std::string const& key, T const& value)
                 return 1;
             }
         }
-     file.close()
+     file.close();
      jsonFile[key] = value;          // Update JSON with new key-value pair
 
 

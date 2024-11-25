@@ -159,26 +159,40 @@ bool isValidEmail(std::string const& email)
 template<typename T>
 int storeData(std::string const& key, T const& value)
 {
-    std::string fileName = "userData.json";
+     std::string fileName = "userData.json";
      nlohmann::json jsonFile;
      std::ifstream file(fileName,  std::ios::in);
-     if(!file) std::cerr << "Error reading userData.json.\n"; return 1;
-     if(file.peek() == std::ifstream::traits_type::eof())
-     {
-        jsonFile = nlohmann::json::object();
-     }
-     else
-     {
-        file >> jsonFile;
-     }
-     file.close();
 
+     if(!file) 
+     {
+        std::cerr << "Error reading userData.json.\n"; return 1;
+        }
+        else if(file.peek() == std::ifstream::traits_type::eof())
+        {
+             jsonFile = nlohmann::json::object();
+        }
+        else
+        {
+            try
+            {
+                file >> jsonFile;
+            } catch (nlohmann::json::parse_error const& err) {
+                std::cerr << "JSON parsing error: " << err.what() << '\n';
+                return 1;
+            }
+        }
+     file.close()
      jsonFile[key] = value;          // Update JSON with new key-value pair
 
 
      std::ofstream ofile(fileName);
-     if(!ofile) std::cerr << "Unable to open file."; return 1;
+     if(!ofile)
+     {
+        std::cerr << "Unable to open file.";
+        return 1;
+     }
 
      ofile << jsonFile.dump(4);
      ofile.close();
+     return 0;
 }

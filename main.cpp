@@ -3,7 +3,6 @@
 #include "needles.h"
 #include <regex>
 #include <limits>
-#include <fstream>
 #include <nlohmann-json.hpp>
 
 int main() 
@@ -23,6 +22,7 @@ int main()
         getName(userFullName, isAllowed);
         getUserName(userName, isAllowed);
         getUserEmail(userEmail, isAllowed);
+        break;
         
     }
     
@@ -31,7 +31,7 @@ int main()
     return 0;
 }
 
-int unqiueIdGenerator()
+int uniqueIdGenerator()
 {
     std::string key = "ID";
     int ID = 0;

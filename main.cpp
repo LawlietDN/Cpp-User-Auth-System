@@ -90,7 +90,7 @@ int getName(std::string& userInput, bool& isAllowed)
     std::cout << "Full name: ";
     std::getline(std::cin, userInput);
    
-    }while(blankChecker(userInput) || lengthChecker(userInput));
+    }while(blankChecker(userInput) || lengthChecker(userInput) || !isAvailable(userInput, "Name"));
     }
     storeData("Name", userInput);
     return 0;
@@ -108,8 +108,10 @@ int getUserName(std::string& userInput, bool& isAllowed)
     std::getline(std::cin, userInput);
     if(checkRetryLimit(maxTries, isAllowed)) return 1;
     }while(blankChecker(userInput));
+    
 }
-return 0;
+    storeData("Username",userInput);
+    return 0;
 }
 
 int getUserEmail(std::string& email, bool& isAllowed)
@@ -125,6 +127,7 @@ int getUserEmail(std::string& email, bool& isAllowed)
     if(checkRetryLimit(maxTries, isAllowed)) return 1;
     }while(blankChecker(email) || !isValidEmail(email));
   }
+    storeData("Email",email);
     return 0;
   }
 int displayOptions() 
@@ -165,20 +168,42 @@ bool isValidEmail(std::string const& email)
      return false;
 }
 template<typename T>
-bool isAvailable(T& searchTerm, std::string const& dataType)
+bool isAvailable(T& searchTerm, std::string const& key)
 {
     nlohmann::json jsonFile;    
     std::ifstream file("userData.json");
-    file >> jsonFile;
-    if(dataType == "ID")
+
+    if (!file) {
+        std::cerr << "Unable to open file.\n";
+        return true; 
+    }
+
+    if (file.peek() == std::ifstream::traits_type::eof()) {
+        return true; 
+    }
+
+    try
+    {
+        file >> jsonFile;
+    }
+    catch(nlohmann::json::parse_error& err)
+    {
+        std::cerr << "An error occured while parsing the JSON file: " << err.what() << '\n';
+        return false;
+    }
+
+    if constexpr(std::is_same<T, int>::value)
+    {
+
+      if(key == "ID")
     {
         int lastID = 0;
 
-        for(auto const& element: jsonFile)
+        for(auto const& item: jsonFile)
         {
-            if(element.contains("ID"))
+            if(item.contains("ID"))
             {
-                int currentID = element["ID"];
+                int currentID = item["ID"];
                 lastID = currentID;
             }
         }
@@ -186,8 +211,27 @@ bool isAvailable(T& searchTerm, std::string const& dataType)
         {
             return false;
         }
+        return true;
+        
+      }
     }
 
+     if constexpr(std::is_same<T, std::string>::value)
+     {
+
+    if(key == "Name")
+    {
+        for(auto const& item : jsonFile)
+    {
+        if(item.contains("Name") && item["Name"] == searchTerm) 
+        {
+            std::cout << "Name is already taken.\nChoose another name\n"; 
+            return false;
+            }         
+        }
+       }
+     }
+     return true;
 
 }
 
@@ -201,9 +245,9 @@ int storeData(std::string const& key, T const& value)
 
      if(!file) 
      {
-        std::cerr << "Error reading userData.json.\n"; return 1;
+        std::cerr << "Unable to open file\n"; return 1;
         }
-        else if(file.peek() == std::ifstream::traits_type::eof())
+    if(file.peek() == std::ifstream::traits_type::eof())
         {
              jsonFile = nlohmann::json::object();
         }
@@ -214,14 +258,14 @@ int storeData(std::string const& key, T const& value)
                 file >> jsonFile;
             } catch (nlohmann::json::parse_error const& err) {
                 std::cerr << "JSON parsing error: " << err.what() << '\n';
-                return 1;
+                return 1; 
             }
         }
      file.close();
      jsonFile[key] = value;          // Update JSON with new key-value pair
 
 
-     std::ofstream ofile(fileName);
+     std::ofstream ofile(fileName,std::ios::app);
      if(!ofile)
      {
         std::cerr << "Unable to open file.";

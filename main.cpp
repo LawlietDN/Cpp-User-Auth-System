@@ -8,6 +8,7 @@
 int main() 
 { 
     bool isAllowed = true;
+    int ID = 0;
     std::string userName;
     std::string userFullName;
     std::string userEmail;
@@ -18,10 +19,18 @@ int main()
         case 1: return 1;
                 
         case 2:
-        uniqueIDGenerator();
+        uniqueIDGenerator(ID);
         getName(userFullName, isAllowed);
         getUserName(userName, isAllowed);
         getUserEmail(userEmail, isAllowed);
+
+        nlohmann::json userData = {
+            {"ID", ID},
+            {"Username", userName},
+            {"Email", userEmail}
+        };
+         storeData(userFullName,userData);
+
         break;
         
     }
@@ -31,17 +40,16 @@ int main()
     return 0;
 }
 
-int uniqueIDGenerator()
+int uniqueIDGenerator(int& ID)
 {
     std::string key = "ID";
-    int ID = 0;
     if(!isAvailable(ID, key))
     {
        ID++;
-       storeData(key, ID);
+       
        return 0;
     }
-       storeData(key, ID);
+
        return 0;
     
 
@@ -92,7 +100,7 @@ int getName(std::string& userInput, bool& isAllowed)
    
     }while(blankChecker(userInput) || lengthChecker(userInput) || !isAvailable(userInput, "Name"));
     }
-    storeData("Name", userInput);
+    
     return 0;
 }
 
@@ -110,7 +118,7 @@ int getUserName(std::string& userInput, bool& isAllowed)
     }while(blankChecker(userInput));
     
 }
-    storeData("Username",userInput);
+   
     return 0;
 }
 
@@ -127,7 +135,7 @@ int getUserEmail(std::string& email, bool& isAllowed)
     if(checkRetryLimit(maxTries, isAllowed)) return 1;
     }while(blankChecker(email) || !isValidEmail(email));
   }
-    storeData("Email",email);
+    
     return 0;
   }
 int displayOptions() 
@@ -236,8 +244,8 @@ bool isAvailable(T& searchTerm, std::string const& key)
 }
 
 
-template<typename T>
-int storeData(std::string const& key, T const& value)
+
+int storeData(std::string const& identifier, nlohmann::json const& userData)
 {
      std::string fileName = "userData.json";
      nlohmann::json jsonFile;
@@ -262,10 +270,11 @@ int storeData(std::string const& key, T const& value)
             }
         }
      file.close();
-     jsonFile[key] = value;          // Update JSON with new key-value pair
+     jsonFile[identifier] = userData;   // Add or update the user information under the unique identifier
 
 
-     std::ofstream ofile(fileName,std::ios::app);
+
+     std::ofstream ofile(fileName);
      if(!ofile)
      {
         std::cerr << "Unable to open file.";

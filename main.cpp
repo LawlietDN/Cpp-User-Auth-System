@@ -24,13 +24,17 @@ int main()
         getUserName(userName, isAllowed);
         getUserEmail(userEmail, isAllowed);
 
-        nlohmann::json userData = {
-            {"ID", ID},
-            {"Username", userName},
-            {"Email", userEmail}
-        };
-         storeData(userFullName,userData);
+        if(isAllowed)
+        {
+            nlohmann::json userData = {
+                {"ID", ID},
+                {"Username", userName},
+                {"Email", userEmail}
+            };
+            storeData(userFullName,userData);
 
+        }
+        
         break;
         
     }
@@ -205,21 +209,12 @@ bool isAvailable(T& searchTerm, std::string const& key)
 
       if(key == "ID")
     {
-        int lastID = 0;
 
-        for(auto const& item: jsonFile)
+        for(auto const& [identifier, userData] : jsonFile.items())
         {
-            if(item.contains("ID"))
-            {
-                int currentID = item["ID"];
-                lastID = currentID;
-            }
+            if(userData.contains("ID") && userData["ID"] == searchTerm) return false;
         }
-        if(lastID == searchTerm)
-        {
-            return false;
-        }
-        return true;
+
         
       }
     }
@@ -227,16 +222,14 @@ bool isAvailable(T& searchTerm, std::string const& key)
      if constexpr(std::is_same<T, std::string>::value)
      {
 
-    if(key == "Name")
+        if(key == "Name")
     {
-        for(auto const& item : jsonFile)
-    {
-        if(item.contains("Name") && item["Name"] == searchTerm) 
-        {
+           if(jsonFile.contains(searchTerm))
+           {
             std::cout << "Name is already taken.\nChoose another name\n"; 
             return false;
             }         
-        }
+        
        }
      }
      return true;

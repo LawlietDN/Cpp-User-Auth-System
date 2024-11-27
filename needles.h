@@ -12,3 +12,5 @@ template<typename T>
 bool isAvailable(T& searchTerm, std::string const& key);
 int storeData(std::string const& identifier, nlohmann::json const& userData);
 int uniqueIDGenerator(int& ID);
+int hashPassword(size_t& password, bool& isAllowed);
+bool checkPasswordLength(std::string const& password);

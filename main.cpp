@@ -12,6 +12,7 @@ int main()
     std::string userName;
     std::string userFullName;
     std::string userEmail;
+    size_t userHashedPassword = 0;
     
     
     switch(displayOptions())
@@ -23,13 +24,15 @@ int main()
         getName(userFullName, isAllowed);
         getUserName(userName, isAllowed);
         getUserEmail(userEmail, isAllowed);
+        hashPassword(userHashedPassword,isAllowed);
 
         if(isAllowed)
         {
             nlohmann::json userData = {
                 {"ID", ID},
                 {"Username", userName},
-                {"Email", userEmail}
+                {"Email", userEmail},
+                {"Hashed Password", userHashedPassword}
             };
             storeData(userFullName,userData);
 
@@ -142,6 +145,38 @@ int getUserEmail(std::string& email, bool& isAllowed)
     
     return 0;
   }
+
+bool checkPasswordLength(std::string const& password)
+{
+    if(password.length() < 9)
+    {
+        std::cout << "Password cannot be less than 9 characters.\n";
+        return true;
+    }
+    return false;
+}
+
+int hashPassword(size_t& password, bool& isAllowed)
+{
+    
+    if(isAllowed)
+    {
+    std::string unhashedPassword;
+    int maxTries = -1;
+    do
+    {
+    maxTries++;
+    std::cout << "Create a password: ";
+    std::getline(std::cin, unhashedPassword);
+    if(checkRetryLimit(maxTries, isAllowed)) return 1;
+    }while(blankChecker(unhashedPassword) || checkPasswordLength(unhashedPassword));
+     std::hash<std::string> hashFunction;
+     password = hashFunction(unhashedPassword);
+  }
+    
+    
+    return 0;
+}
 int displayOptions() 
 {
     int t = 0;

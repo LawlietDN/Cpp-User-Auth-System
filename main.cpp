@@ -313,3 +313,22 @@ int storeData(std::string const& identifier, nlohmann::json const& userData)
      ofile.close();
      return 0;
 }
+
+
+
+class LoginManager
+{
+public:
+
+    void promptCredentials()
+    {
+        std::cout << "Full name: ";
+        std::getline(std::cin, fullName);
+
+    }
+
+
+private:
+    std::string fullName;
+    std::string password;
+};

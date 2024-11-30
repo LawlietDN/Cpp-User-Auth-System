@@ -1,4 +1,5 @@
 #include <nlohmann-json.hpp>
+#include "LogInManagement/logIn.cpp"
 int getName(std::string& userInput, bool& isAllowed);
 int getUserName(std::string& userInput, bool& isAllowed);
 bool lengthChecker(std::string const& userInput);

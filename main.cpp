@@ -4,6 +4,8 @@
 #include <regex>
 #include <limits>
 #include <nlohmann-json.hpp>
+#include <filesystem>
+
 
 int main() 
 { 
@@ -12,13 +14,24 @@ int main()
     std::string userName;
     std::string userFullName;
     std::string userEmail;
+    std::string password;
     size_t userHashedPassword = 0;
-    
-    
+    LoginManager logInManager(" ", " ");
     switch(displayOptions())
     {
-        case 1: return 1;
-                
+        case 1:
+        promptCredentials(userFullName,password);
+        logInManager = LoginManager(userFullName, password);
+        if(logInManager.authentication())
+        {
+            logInMessage();
+        }
+        else
+        {
+            std::cout << "Invalid credentials.\n";
+        }
+        break;
+
         case 2:
         uniqueIDGenerator(ID);
         getName(userFullName, isAllowed);
@@ -220,6 +233,7 @@ bool isAvailable(T& searchTerm, std::string const& key)
     nlohmann::json jsonFile;    
     std::ifstream file("userData.json");
 
+    
     if (!file) {
         std::cerr << "Unable to open file.\n";
         return true; 
@@ -314,21 +328,3 @@ int storeData(std::string const& identifier, nlohmann::json const& userData)
      return 0;
 }
 
-
-
-class LoginManager
-{
-public:
-
-    void promptCredentials()
-    {
-        std::cout << "Full name: ";
-        std::getline(std::cin, fullName);
-
-    }
-
-
-private:
-    std::string fullName;
-    std::string password;
-};

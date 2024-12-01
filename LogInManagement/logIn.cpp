@@ -1,6 +1,9 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <nlohmann-json.hpp>
+
+
+enum { SUCCESS = 0, FAILURE = 1};
 class LoginManager
 {
 private:
@@ -8,8 +11,13 @@ private:
     std::string password;
     std::string fileName = "userData.json";
     nlohmann::json storedData;
-    size_t hashedPassword = hashPassword();
 
+
+    size_t hashPassword(std::string const& pwd)
+    {
+         std::hash<std::string> hashFunction;
+         return hashFunction(pwd);
+    }
 public:
 
     LoginManager(std::string const& name, std::string const& pwd)
@@ -20,15 +28,32 @@ public:
     
     bool authentication()
     {
-        std::cout << "DEBUG: INSIDE THE FUNCTION AUTHETNITUCION";
-        std::string loadedPassword;
-        std::string loadedName;
-        loadData(loadedName, loadedPassword);
-        std::cout << loadedPassword;
+
+        size_t storedPassword;
+        if(loadData(storedPassword) != SUCCESS)
+        {
+            return false;
+        }
+
+
+        size_t inputHash = hashPassword(password);
+        size_t storedHash = storedPassword;
+
+        if(inputHash == storedHash)
+        {
+            
+            return true;
+        }
+        
+        return false;
 
     }
 
-    int loadData(std::string& loadedFullName, std::string& loadedPassword)
+
+
+
+
+    int loadData(size_t& loadedPassword)
     {
         std::ifstream ifile(fileName);
         
@@ -41,35 +66,34 @@ public:
         {
             ifile >> storedData;
         }
-        catch(nlohmann::json::parse_error& err)
+        catch(nlohmann::json::parse_error const& err)
         {
             std::cerr << "An error occured while parsing the JSON file: " << err.what() << '\n';
+            return FAILURE;
         }
-        for(auto const& [identifer, data] : storedData.items())
+
+        if(storedData.contains(fullName))
         {
-            if(!storedData.contains(fullName))
+            try
             {
-
-            }
-        }
-
-        
-            for(auto const& [identifer, data] : storedData.items())
-            {
-                if(identifer == loadedFullName)
+                for(auto const& [fullName, data] : storedData.items())
                 {
                     loadedPassword = data["Hashed Password"];
                 }
+               
             }
-        
+            catch(nlohmann::json_abi_v3_11_2::detail::type_error const& err)
+            {
+                std::cerr << "No idea what happend, but here take a look at this error message: " << err.what();
+            }
+        }
+        else
+        {
+            return FAILURE;
+        }
         return 0;
     }
 
-    int hashPassword()
-    {
-         std::hash<std::string> hashFunction;
-         return hashFunction(password);
-    }
     
 };
 
@@ -78,9 +102,17 @@ public:
 
 void promptCredentials(std::string& name, std::string& password)
 {
+    
     std::cout << "Full name: ";
     std::getline(std::cin, name);
 
     std::cout << "Password: ";
     std::getline(std::cin, password);
+    
+}
+
+
+void logInMessage()
+{
+    std::cout << "Sucessfully logged in.\n";
 }

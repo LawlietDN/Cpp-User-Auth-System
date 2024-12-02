@@ -22,6 +22,7 @@ int main()
         case 1:
         promptCredentials(userFullName,password);
         logInManager = LoginManager(userFullName, password);
+        
         if(logInManager.authentication())
         {
             logInMessage();

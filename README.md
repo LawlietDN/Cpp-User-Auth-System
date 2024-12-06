@@ -14,9 +14,8 @@
 
 ## Prerequisites
 
-- **Operating System:** Linux (tested on Linux Crostini on Chromebook)
+- **Operating System:** Linux 
 - **Compiler:** `g++` (supports C++11 or later)
-- **Build Tools:** `make` (optional, if using a Makefile)
 - **Libraries:**
   - [nlohmann/json](https://github.com/nlohmann/json) for JSON parsing
 

@@ -26,3 +26,6 @@
 ```bash
 git clone https://github.com/LawlietDN/Cpp-User-Auth-System.git
 cd Cpp-User-Auth-System
+chmod +x auth-code
+./auth-code
+

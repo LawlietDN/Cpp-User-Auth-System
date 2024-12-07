@@ -8,7 +8,7 @@
 
 - **User Registration:** Create a new account with a unique username and email.
 - **User Authentication:** Log in with your username and password.
-- **Password Hashing:** Securely store hashed passwords.
+- **Password Hashing:** Store hashed passwords.
 - **Data Persistence:** User data is stored in a JSON file (`userData.json`).
 - **Input Validation:** Ensures valid email formats and enforces password strength.
 
